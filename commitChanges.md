@@ -1,2 +1,2 @@
 # changes
-- percepts alien
+- added iteration slot and integration to field
