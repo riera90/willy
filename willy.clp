@@ -109,3 +109,13 @@
 		(filed (x ?x) (y ?y) (gravity true))
 	)
 )
+
+(defrule HazardsModule::alien
+	(declare (salience 1))
+	(percepts Noise)
+	(position (name willy) (x ?x) (y ?y))
+	=>
+	(assert
+		(filed (x ?x) (y ?y) (noise true))
+	)
+)
