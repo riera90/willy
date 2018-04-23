@@ -31,12 +31,14 @@
 
 (defrule myMAIN::passToHazardsModule
 	(declare (salience 100))
+	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
 	(focus HazardsModule)
 )
 
 (defrule myMAIN::passToMovementModule
 	(declare (salience 99))
+	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
 	(focus MovementModule)
 )
@@ -55,6 +57,7 @@
 	(assert
 		(position (name willy)(x ?x_w) (y (+ ?y_w 1)))
 	)
+	(return)
 )
 
 (defrule MovementModule::moveWillySouth
@@ -66,6 +69,7 @@
 	(assert
 		(position (name willy)(x ?x_w) (y (+ ?y_w -1)))
 	)
+	(return)
 )
 
 (defrule MovementModule::moveWillyEast
@@ -77,6 +81,7 @@
 	(assert
 		(position (name willy)(x (+ ?x_w 1)) (y ?y_w))
 	)
+	(return)
 )
 
 (defrule MovementModule::moveWillyWest
@@ -88,6 +93,7 @@
 	(assert
 		(position (name willy)(x (+ ?x_w -1)) (y ?y_w))
 	)
+	(return)
 )
 
 ;===============================================================================
@@ -99,7 +105,6 @@
 	(percepts Pull)
 	(position (name willy) (x ?x) (y ?y))
 	=>
-	(moveWilly south)
 	(assert
 		(filed (x ?x) (y ?y) (gravity true))
 	)

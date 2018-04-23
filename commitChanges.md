@@ -1,4 +1,2 @@
 # changes
-- added not working HazardsModule
-- added willy tracking
-  test
+- fixed modules focusing
