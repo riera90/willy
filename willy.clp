@@ -49,6 +49,7 @@
 
 
 (defrule MovementModule::moveWillyNorth
+	(declare (salience 1))
 	(directions $? north $?)
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
@@ -61,6 +62,7 @@
 )
 
 (defrule MovementModule::moveWillySouth
+	(declare (salience 1))
 	(directions $? south $?)
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
@@ -73,6 +75,7 @@
 )
 
 (defrule MovementModule::moveWillyEast
+	(declare (salience 1))
 	(directions $? east $?)
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
@@ -85,6 +88,7 @@
 )
 
 (defrule MovementModule::moveWillyWest
+	(declare (salience 1))
 	(directions $? west $?)
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
