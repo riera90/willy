@@ -52,7 +52,7 @@
 (defmodule MovementModule (import InternalFunctions deffunction ?ALL) (import myMAIN deftemplate ?ALL) (export ?ALL))
 
 ;============================================================================
-; backtraking
+; backtrack
 ;============================================================================
 
 (defrule MovementModule::backtrackSouth
@@ -62,7 +62,7 @@
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	?past_pos<-(field (iteration ?it_field&:(= ?it_field (- ?iteration 1)))
 										(x ?x_f&:(= ?x_w ?x_f))
-										(y ?y_f&:(= ?y_f (- ?y_w 1)))
+										(y ?y_f&:(= ?y_f (+ ?y_w -1)))
 							)
 	=>
 	(retract ?bt)
@@ -70,7 +70,7 @@
 	(retract ?willy)
 	(retract ?past_pos)
 	(assert
-		(position (name willy) (x ?x_w) (y ?y_w))
+		(position (name willy) (x ?x_f) (y ?y_f))
 		(iteration (+ ?iteration 1))
 	)
 	(moveWilly south)
@@ -92,7 +92,7 @@
 	(retract ?willy)
 	(retract ?past_pos)
 	(assert
-		(position (name willy) (x ?x_w) (y ?y_w))
+		(position (name willy) (x ?x_f) (y ?y_f))
 		(iteration (+ ?iteration 1))
 	)
 	(moveWilly north)
@@ -105,7 +105,7 @@
 	?it<-(iteration ?iteration)
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	?past_pos<-(field (iteration ?it_field&:(= ?it_field (- ?iteration 1)))
-										(x ?x_f&:(= ?x_w (- ?x_f 1)))
+										(x ?x_f&:(= ?x_w (+ ?x_f -1)))
 										(y ?y_f&:(= ?y_f ?y_w))
 							)
 	=>
@@ -114,7 +114,7 @@
 	(retract ?willy)
 	(retract ?past_pos)
 	(assert
-		(position (name willy) (x ?x_w) (y ?y_w))
+		(position (name willy) (x ?x_f) (y ?y_f))
 		(iteration (+ ?iteration 1))
 	)
 	(moveWilly east)
@@ -136,7 +136,7 @@
 	(retract ?willy)
 	(retract ?past_pos)
 	(assert
-		(position (name willy) (x ?x_w) (y ?y_w))
+		(position (name willy) (x ?x_f) (y ?y_f))
 		(iteration (+ ?iteration 1))
 	)
 	(moveWilly west)
@@ -144,11 +144,97 @@
 )
 
 ;============================================================================
-; move's
+; move normal
 ;============================================================================
 
 (defrule MovementModule::moveWillyNorth
+	(declare (salience 0))
+	?it<-(iteration ?iteration)
+	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
+	(directions $? north $?)
+	(not
+		(field	(x ?x_f&:(= ?x_f ?x_w))
+						(y ?y_f&:(= ?y_f (+ ?y_w 1))))
+	)
+	=>
+	(retract ?willy)
+	(retract ?it)
+	(moveWilly north)
+	(assert
+		(position (name willy)(x ?x_w) (y (+ ?y_w 1)))
+		(iteration (+ ?iteration 1))
+	)
+	(return)
+)
+
+
+(defrule MovementModule::moveWillySouth
 	(declare (salience 1))
+	?it<-(iteration ?iteration)
+	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
+	(directions $? south $?)
+	(not
+		(field	(x ?x_f&:(= ?x_f ?x_w))
+						(y ?y_f&:(= ?y_f (+ ?y_w -1))))
+	)
+	=>
+	(retract ?willy)
+	(retract ?it)
+	(moveWilly south)
+	(assert
+		(position (name willy)(x ?x_w) (y (+ ?y_w -1)))
+		(iteration (+ ?iteration 1))
+	)
+	(return)
+)
+
+(defrule MovementModule::moveWillyEast
+	(declare (salience 1))
+	?it<-(iteration ?iteration)
+	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
+	(directions $? east $?)
+	(not
+		(field	(x ?x_f&:(= ?x_f (+ ?x_w 1)))
+						(y ?y_f&:(= ?y_f ?y_w)))
+	)
+	=>
+	(retract ?willy)
+	(retract ?it)
+	(moveWilly east)
+	(assert
+		(position (name willy)(x (+ ?x_w 1)) (y ?y_w))
+		(iteration (+ ?iteration 1))
+	)
+	(return)
+)
+
+(defrule MovementModule::moveWillyWest
+	(declare (salience 1))
+	?it<-(iteration ?iteration)
+	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
+	(directions $? west $?)
+	(not
+		(field	(x ?x_f&:(= ?x_f (+ ?x_w -1)))
+						(y ?y_f&:(= ?y_f ?y_w)))
+	)
+	=>
+	(retract ?willy)
+	(retract ?it)
+	(moveWilly west)
+	(assert
+		(position (name willy) (x (+ ?x_w -1)) (y ?y_w))
+		(iteration (+ ?iteration 1))
+	)
+	(return)
+)
+
+
+;============================================================================
+; move stuck
+;============================================================================
+
+(defrule MovementModule::moveWillyNorthStuck
+	(declare (salience 0))
 	(directions $? north $?)
 	?it<-(iteration ?iteration)
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
@@ -164,8 +250,8 @@
 )
 
 
-(defrule MovementModule::moveWillySouth
-	(declare (salience 1))
+(defrule MovementModule::moveWillySouthStuck
+	(declare (salience 0))
 	(directions $? south $?)
 	?it<-(iteration ?iteration)
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
@@ -180,8 +266,8 @@
 	(return)
 )
 
-(defrule MovementModule::moveWillyEast
-	(declare (salience 1))
+(defrule MovementModule::moveWillyEastStuck
+	(declare (salience 0))
 	?it<-(iteration ?iteration)
 	(directions $? east $?)
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
@@ -196,8 +282,8 @@
 	(return)
 )
 
-(defrule MovementModule::moveWillyWest
-	(declare (salience 1))
+(defrule MovementModule::moveWillyWestStuck
+	(declare (salience 0))
 	(directions $? west $?)
 	?it<-(iteration ?iteration)
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
@@ -211,8 +297,6 @@
 	)
 	(return)
 )
-
-
 
 ;============================================================================
 ;============================================================================
