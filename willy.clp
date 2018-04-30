@@ -58,7 +58,7 @@
 (defrule MovementModule::backtrackSouth
 	(declare (salience 100))
 	?bt<-(warning (value backtrack))
-	?it<-(iteration ?iteration)
+	?it<-(iteration ?iteration&:(< ?iteration 999))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	?past_pos<-(field (iteration ?it_field&:(= ?it_field (- ?iteration 1)))
 										(x ?x_f&:(= ?x_w ?x_f))
@@ -80,7 +80,7 @@
 (defrule MovementModule::backtrackNorth
 	(declare (salience 100))
 	?bt<-(warning (value backtrack))
-	?it<-(iteration ?iteration)
+	?it<-(iteration ?iteration&:(< ?iteration 999))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	?past_pos<-(field (iteration ?it_field&:(= ?it_field (- ?iteration 1)))
 										(x ?x_f&:(= ?x_w ?x_f))
@@ -102,7 +102,7 @@
 (defrule MovementModule::backtrackEast
 	(declare (salience 100))
 	?bt<-(warning (value backtrack))
-	?it<-(iteration ?iteration)
+	?it<-(iteration ?iteration&:(< ?iteration 999))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	?past_pos<-(field (iteration ?it_field&:(= ?it_field (- ?iteration 1)))
 										(x ?x_f&:(= ?x_w (+ ?x_f -1)))
@@ -124,7 +124,7 @@
 (defrule MovementModule::backtrackWest
 	(declare (salience 100))
 	?bt<-(warning (value backtrack))
-	?it<-(iteration ?iteration)
+	?it<-(iteration ?iteration&:(< ?iteration 999))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	?past_pos<-(field (iteration ?it_field&:(= ?it_field (- ?iteration 1)))
 										(x ?x_f&:(= ?x_w (+ ?x_f 1)))
@@ -149,7 +149,7 @@
 
 (defrule MovementModule::moveWillyNorth
 	(declare (salience 0))
-	?it<-(iteration ?iteration)
+	?it<-(iteration ?iteration&:(< ?iteration 999))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	(directions $? north $?)
 	(not
@@ -170,7 +170,7 @@
 
 (defrule MovementModule::moveWillySouth
 	(declare (salience 1))
-	?it<-(iteration ?iteration)
+	?it<-(iteration ?iteration&:(< ?iteration 999))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	(directions $? south $?)
 	(not
@@ -190,7 +190,7 @@
 
 (defrule MovementModule::moveWillyEast
 	(declare (salience 1))
-	?it<-(iteration ?iteration)
+	?it<-(iteration ?iteration&:(< ?iteration 999))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	(directions $? east $?)
 	(not
@@ -210,7 +210,7 @@
 
 (defrule MovementModule::moveWillyWest
 	(declare (salience 1))
-	?it<-(iteration ?iteration)
+	?it<-(iteration ?iteration&:(< ?iteration 999))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	(directions $? west $?)
 	(not
@@ -236,7 +236,7 @@
 (defrule MovementModule::moveWillyNorthStuck
 	(declare (salience 0))
 	(directions $? north $?)
-	?it<-(iteration ?iteration)
+	?it<-(iteration ?iteration&:(< ?iteration 999))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
 	(retract ?willy)
@@ -253,7 +253,7 @@
 (defrule MovementModule::moveWillySouthStuck
 	(declare (salience 0))
 	(directions $? south $?)
-	?it<-(iteration ?iteration)
+	?it<-(iteration ?iteration&:(< ?iteration 999))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
 	(retract ?willy)
@@ -268,8 +268,8 @@
 
 (defrule MovementModule::moveWillyEastStuck
 	(declare (salience 0))
-	?it<-(iteration ?iteration)
 	(directions $? east $?)
+	?it<-(iteration ?iteration&:(< ?iteration 999))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
 	(retract ?willy)
@@ -285,7 +285,7 @@
 (defrule MovementModule::moveWillyWestStuck
 	(declare (salience 0))
 	(directions $? west $?)
-	?it<-(iteration ?iteration)
+	?it<-(iteration ?iteration&:(< ?iteration 999))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
 	(retract ?willy)
