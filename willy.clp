@@ -32,6 +32,7 @@
 
 (deffacts intitial_module_facts
 	(iteration 0)
+	(max_iteration 999)
 	(position (name willy))
 	(field (iteration 0) (x 0) (y 0))
 )
@@ -58,7 +59,8 @@
 (defrule MovementModule::backtrackSouth
 	(declare (salience 100))
 	?bt<-(warning (value backtrack))
-	?it<-(iteration ?iteration&:(< ?iteration 999))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	?past_pos<-(field (iteration ?it_field&:(= ?it_field (- ?iteration 1)))
 										(x ?x_f&:(= ?x_w ?x_f))
@@ -68,7 +70,6 @@
 	(retract ?bt)
 	(retract ?it)
 	(retract ?willy)
-	(retract ?past_pos)
 	(assert
 		(position (name willy) (x ?x_f) (y ?y_f))
 		(iteration (+ ?iteration 1))
@@ -80,7 +81,8 @@
 (defrule MovementModule::backtrackNorth
 	(declare (salience 100))
 	?bt<-(warning (value backtrack))
-	?it<-(iteration ?iteration&:(< ?iteration 999))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	?past_pos<-(field (iteration ?it_field&:(= ?it_field (- ?iteration 1)))
 										(x ?x_f&:(= ?x_w ?x_f))
@@ -90,7 +92,6 @@
 	(retract ?bt)
 	(retract ?it)
 	(retract ?willy)
-	(retract ?past_pos)
 	(assert
 		(position (name willy) (x ?x_f) (y ?y_f))
 		(iteration (+ ?iteration 1))
@@ -102,7 +103,8 @@
 (defrule MovementModule::backtrackEast
 	(declare (salience 100))
 	?bt<-(warning (value backtrack))
-	?it<-(iteration ?iteration&:(< ?iteration 999))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	?past_pos<-(field (iteration ?it_field&:(= ?it_field (- ?iteration 1)))
 										(x ?x_f&:(= ?x_w (+ ?x_f -1)))
@@ -112,7 +114,6 @@
 	(retract ?bt)
 	(retract ?it)
 	(retract ?willy)
-	(retract ?past_pos)
 	(assert
 		(position (name willy) (x ?x_f) (y ?y_f))
 		(iteration (+ ?iteration 1))
@@ -124,7 +125,8 @@
 (defrule MovementModule::backtrackWest
 	(declare (salience 100))
 	?bt<-(warning (value backtrack))
-	?it<-(iteration ?iteration&:(< ?iteration 999))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	?past_pos<-(field (iteration ?it_field&:(= ?it_field (- ?iteration 1)))
 										(x ?x_f&:(= ?x_w (+ ?x_f 1)))
@@ -134,7 +136,6 @@
 	(retract ?bt)
 	(retract ?it)
 	(retract ?willy)
-	(retract ?past_pos)
 	(assert
 		(position (name willy) (x ?x_f) (y ?y_f))
 		(iteration (+ ?iteration 1))
@@ -149,7 +150,8 @@
 
 (defrule MovementModule::moveWillyNorth
 	(declare (salience 0))
-	?it<-(iteration ?iteration&:(< ?iteration 999))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	(directions $? north $?)
 	(not
@@ -170,7 +172,8 @@
 
 (defrule MovementModule::moveWillySouth
 	(declare (salience 1))
-	?it<-(iteration ?iteration&:(< ?iteration 999))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	(directions $? south $?)
 	(not
@@ -190,7 +193,8 @@
 
 (defrule MovementModule::moveWillyEast
 	(declare (salience 1))
-	?it<-(iteration ?iteration&:(< ?iteration 999))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	(directions $? east $?)
 	(not
@@ -210,7 +214,8 @@
 
 (defrule MovementModule::moveWillyWest
 	(declare (salience 1))
-	?it<-(iteration ?iteration&:(< ?iteration 999))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	(directions $? west $?)
 	(not
@@ -236,7 +241,8 @@
 (defrule MovementModule::moveWillyNorthStuck
 	(declare (salience 0))
 	(directions $? north $?)
-	?it<-(iteration ?iteration&:(< ?iteration 999))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
 	(retract ?willy)
@@ -253,7 +259,8 @@
 (defrule MovementModule::moveWillySouthStuck
 	(declare (salience 0))
 	(directions $? south $?)
-	?it<-(iteration ?iteration&:(< ?iteration 999))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
 	(retract ?willy)
@@ -269,7 +276,8 @@
 (defrule MovementModule::moveWillyEastStuck
 	(declare (salience 0))
 	(directions $? east $?)
-	?it<-(iteration ?iteration&:(< ?iteration 999))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
 	(retract ?willy)
@@ -285,7 +293,8 @@
 (defrule MovementModule::moveWillyWestStuck
 	(declare (salience 0))
 	(directions $? west $?)
-	?it<-(iteration ?iteration&:(< ?iteration 999))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
 	(retract ?willy)
@@ -348,7 +357,7 @@
 	(focus MovementModule)
 )
 
-(defrule HazardsModule::noHazard
+(defrule HazardsModule::noHazardmax
 	(declare (salience 1))
 	(iteration ?it)
 	(percepts )
@@ -358,4 +367,86 @@
 		(field (iteration ?it) (x ?x) (y ?y))
 	)
 	(focus MovementModule)
+)
+
+(defrule HazardsModule::locate_alien_middle_horizontal
+	(declare (salience 3))
+	?n1<-(field (x ?x1)                   (y ?y)(noise true))
+	?n2<-(field (x ?x2&:(= ?x1 (+ ?x2 -2)))(y ?y)(noise true))
+	=>
+	(assert
+		(position (name alien)(x (+ ?x1 1))(y ?y))
+	)
+)
+
+(defrule HazardsModule::locate_alien_middle_vertical
+	(declare (salience 3))
+	?n1<-(field (x ?x)(y ?y1)                   (noise true))
+	?n2<-(field (x ?x)(y ?y2&:(= ?y1 (+ ?y2 -2)))(noise true))
+	=>
+	(assert
+		(position (name alien)(x ?x)(y (+ ?y1 1)))
+	)
+)
+
+(defrule HazardsModule::shoot_alien_right
+	(declare (salience 4))
+	(hasLaser)
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
+	?w<-(position (name willy) (x ?xw)              (y ?y))
+	?a<-(position (name alien) (x ?xa&:(< ?xw ?xa)) (y ?y))
+	=>
+	(retract ?a)
+	(retract ?mit)
+	(assert
+		(max_iteration (+ ?max_iteration -1))
+	)
+	(fireLaser east)
+)
+
+(defrule HazardsModule::shoot_alien_left
+	(declare (salience 4))
+	(hasLaser)
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
+	?w<-(position (name willy) (x ?xw)              (y ?y))
+	?a<-(position (name alien) (x ?xa&:(> ?xw ?xa)) (y ?y))
+	=>
+	(retract ?a)
+	(retract ?mit)
+	(assert
+		(max_iteration (+ ?max_iteration -1))
+	)
+	(fireLaser west)
+)
+
+(defrule HazardsModule::shoot_alien_up
+	(declare (salience 4))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
+	?w<-(position (name willy) (x ?x) (y ?yw))
+	?a<-(position (name alien) (x ?x) (y ?ya&:(< ?yw ?ya)))
+	=>
+	(retract ?a)
+	(retract ?mit)
+	(assert
+		(max_iteration (+ ?max_iteration -1))
+	)
+	(fireLaser north)
+)
+
+(defrule HazardsModule::shoot_alien_down
+	(declare (salience 4))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
+	?w<-(position (name willy) (x ?x) (y ?yw))
+	?a<-(position (name alien) (x ?x) (y ?ya&:(> ?yw ?ya)))
+	=>
+	(retract ?a)
+	(retract ?mit)
+	(assert
+		(max_iteration (+ ?max_iteration -1))
+	)
+	(fireLaser south)
 )
