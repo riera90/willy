@@ -446,6 +446,8 @@
 	(assert (iteration (+ ?iteration 1))) ; Incrementamos el hecho contador
 	(assert (position (name willy) (x ?x) (y (- ?y 1)))) ; Actualizacion de la posicion de willy, en este caso una posicion hacia abajo
 	(assert (movimientos-contrarios $?valores)) ; Vuelvo a afirmar el hecho movimientos pero ahora sin el movimiento que acaba de realizar
+	(assert (repeat))
+	(return)
 )
 
 ; Para el resto de backtracks es exactamente lo mismo lo unico que se modifica es la posicion a la que se mueve
@@ -466,6 +468,8 @@
 		(assert (iteration (+ ?iteration 1)))
 		(assert (position (name willy) (x ?x) (y (+ ?y 1))))
 		(assert (movimientos-contrarios $?valores))
+		(assert (repeat))
+		(return)
 	)
 
 	(defrule MovementModule::backtrackEast
@@ -484,6 +488,8 @@
 		(assert (iteration (+ ?iteration 1)))
 		(assert (position (name willy) (x (+ ?x 1)) (y ?y)))
 		(assert (movimientos-contrarios $?valores))
+		(assert (repeat))
+		(return)
 	)
 
 	(defrule MovementModule::backtrackWest
@@ -502,6 +508,8 @@
 		(assert (iteration (+ ?iteration 1)))
 		(assert (position (name willy) (x (- ?x 1)) (y ?y)))
 		(assert (movimientos-contrarios $?valores))
+		(assert (repeat))
+		(return)
 	)
 
 ;============================================================================
