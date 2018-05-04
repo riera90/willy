@@ -573,9 +573,10 @@
 	(declare (salience 0)) ; Ha esta regla se le colocara prioridad inferior que el resto de movimientos, ya que se va a ejercutar cuando
 	; no se puedan ejercutar las otras, es decir, cuando no exista ninguna casilla circunstante sin visitar
 	(max_iteration ?max_iteration)
-	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
-	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
-	?m<-(movimientos-contrarios north $?valores)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration)) ; El numero de iteracion debe de ser menor que el maximo
+	?willy<-(position (name willy) (x ?x_w) (y ?y_w)) ; Necesito almacenar la posicion del willy para modificarla ya que se desplaza
+	?m<-(movimientos-contrarios north $?valores) ; Se activa cuando el ultimo movimiento que se hizo fue hacia el sur y por tanto se almaceno norte
+	
 	=>
 	(retract ?willy)
 	(retract ?it)
