@@ -24,7 +24,6 @@
 )
 
 (deftemplate field
-	(slot iteration)
 	(slot x)
 	(slot y)
 	(slot noise (allowed-symbols true false) (default false))
@@ -35,8 +34,8 @@
 	(iteration 0)
 	(max_iteration 999)
 	(position (name willy))
-	(field (iteration 0) (x 0) (y 0))
 	(movimientos-contrarios)
+	(shoot)
 )
 
 (defrule myMAIN::passToHazardsModule
@@ -58,105 +57,81 @@
 ; backtrack
 ;============================================================================
 
-(defrule MovementModule::backtrackSouth
-	(declare (salience 100))
-	?bt<-(warning (value backtrack))
-	?mit<-(max_iteration ?max_iteration)
-	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
-	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
-	?past_pos<-(field (iteration ?it_field&:(= ?it_field (- ?iteration 1)))
-										(x ?x_f&:(= ?x_w ?x_f))
-										(y ?y_f&:(= ?y_f (+ ?y_w -1)))
-							)
-	?m<-(movimientos-contrarios ? $?valores)
-	=>
-	(retract ?bt)
-	(retract ?it)
-	(retract ?willy)
-	(retract ?m)
-	(assert
-		(position (name willy) (x ?x_f) (y ?y_f))
-		(iteration (+ ?iteration 1))
+	(defrule MovementModule::backtrackSouth
+		(declare (salience 100))
+		?w<-(warning (value backtrack))
+		(max_iteration ?max_iteration)
+		?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
+		?p<-(position (name willy) (x ?x) (y ?y))
+		?m<-(movimientos-contrarios south $?valores)
+		=>
+		(retract ?it)
+		(retract ?p)
+		(retract ?w)
+		(retract ?m)
+		(moveWilly south)
+		(assert (iteration (+ ?iteration 1)))
+		(assert (position (name willy) (x ?x) (y (- ?y 1))))
+		(assert (movimientos-contrarios $?valores))
+		(return)
 	)
-	(moveWilly south)
-	(assert (movimientos-contrarios $?valores))
-	(return)
-)
 
-(defrule MovementModule::backtrackNorth
-	(declare (salience 100))
-	?bt<-(warning (value backtrack))
-	?mit<-(max_iteration ?max_iteration)
-	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
-	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
-	?past_pos<-(field (iteration ?it_field&:(= ?it_field (- ?iteration 1)))
-										(x ?x_f&:(= ?x_w ?x_f))
-										(y ?y_f&:(= ?y_f (+ ?y_w 1)))
-							)
-	?m<-(movimientos-contrarios ? $?valores)
-	=>
-	(retract ?bt)
-	(retract ?it)
-	(retract ?willy)
-	(retract ?m)
-	(assert
-		(position (name willy) (x ?x_f) (y ?y_f))
-		(iteration (+ ?iteration 1))
+	(defrule MovementModule::backtrackNorth
+		(declare (salience 100))
+		?w<-(warning (value backtrack))
+		(max_iteration ?max_iteration)
+		?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
+		?p<-(position (name willy) (x ?x) (y ?y))
+		?m<-(movimientos-contrarios north $?valores)
+		=>
+		(retract ?it)
+		(retract ?p)
+		(retract ?w)
+		(retract ?m)
+		(moveWilly north)
+		(assert (iteration (+ ?iteration 1)))
+		(assert (position (name willy) (x ?x) (y (+ ?y 1))))
+		(assert (movimientos-contrarios $?valores))
+		(return)
 	)
-	(moveWilly north)
-	(assert (movimientos-contrarios $?valores))
-	(return)
-)
 
-(defrule MovementModule::backtrackEast
-	(declare (salience 100))
-	?bt<-(warning (value backtrack))
-	?mit<-(max_iteration ?max_iteration)
-	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
-	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
-	?past_pos<-(field (iteration ?it_field&:(= ?it_field (- ?iteration 1)))
-										(x ?x_f&:(= ?x_w (+ ?x_f -1)))
-										(y ?y_f&:(= ?y_f ?y_w))
-							)
-	?m<-(movimientos-contrarios ? $?valores)
-	=>
-	(retract ?bt)
-	(retract ?it)
-	(retract ?willy)
-	(retract ?m)
-	(assert
-		(position (name willy) (x ?x_f) (y ?y_f))
-		(iteration (+ ?iteration 1))
+	(defrule MovementModule::backtrackEast
+		(declare (salience 100))
+		?w<-(warning (value backtrack))
+		(max_iteration ?max_iteration)
+		?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
+		?p<-(position (name willy) (x ?x) (y ?y))
+		?m<-(movimientos-contrarios east $?valores)
+		=>
+		(retract ?it)
+		(retract ?p)
+		(retract ?w)
+		(retract ?m)
+		(moveWilly east)
+		(assert (iteration (+ ?iteration 1)))
+		(assert (position (name willy) (x (+ ?x 1)) (y ?y)))
+		(assert (movimientos-contrarios $?valores))
+		(return)
 	)
-	(moveWilly east)
-	(assert (movimientos-contrarios $?valores))
-	(return)
-)
 
-(defrule MovementModule::backtrackWest
-	(declare (salience 100))
-	?bt<-(warning (value backtrack))
-	?mit<-(max_iteration ?max_iteration)
-	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
-	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
-	?past_pos<-(field (iteration ?it_field&:(= ?it_field (- ?iteration 1)))
-										(x ?x_f&:(= ?x_w (+ ?x_f 1)))
-										(y ?y_f&:(= ?y_f ?y_w))
-							)
-	?m<-(movimientos-contrarios ? $?valores)
-	=>
-	(retract ?bt)
-	(retract ?it)
-	(retract ?willy)
-	(retract ?m)
-	(assert
-		(position (name willy) (x ?x_f) (y ?y_f))
-		(iteration (+ ?iteration 1))
+	(defrule MovementModule::backtrackWest
+		(declare (salience 100))
+		?w<-(warning (value backtrack))
+		(max_iteration ?max_iteration)
+		?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
+		?p<-(position (name willy) (x ?x) (y ?y))
+		?m<-(movimientos-contrarios west $?valores)
+		=>
+		(retract ?it)
+		(retract ?p)
+		(retract ?w)
+		(retract ?m)
+		(moveWilly west)
+		(assert (iteration (+ ?iteration 1)))
+		(assert (position (name willy) (x (- ?x 1)) (y ?y)))
+		(assert (movimientos-contrarios $?valores))
+		(return)
 	)
-	(moveWilly west)
-	(assert (movimientos-contrarios $?valores))
-	(return)
-)
 
 ;============================================================================
 ; move normal
@@ -342,80 +317,6 @@
 	(return)
 )
 
-
-
-
-
-
-; (defrule MovementModule::moveWillyNorthStuck
-; 	(declare (salience 0))
-; 	(directions $? north $?)
-; 	?mit<-(max_iteration ?max_iteration)
-; 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
-; 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
-; 	=>
-; 	(retract ?willy)
-; 	(retract ?it)
-; 	(moveWilly north)
-; 	(assert
-; 		(position (name willy)(x ?x_w) (y (+ ?y_w 1)))
-; 		(iteration (+ ?iteration 1))
-; 	)
-; 	(return)
-; )
-;
-;
-; (defrule MovementModule::moveWillySouthStuck
-; 	(declare (salience 0))
-; 	(directions $? south $?)
-; 	?mit<-(max_iteration ?max_iteration)
-; 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
-; 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
-; 	=>
-; 	(retract ?willy)
-; 	(retract ?it)
-; 	(moveWilly south)
-; 	(assert
-; 		(position (name willy)(x ?x_w) (y (+ ?y_w -1)))
-; 		(iteration (+ ?iteration 1))
-; 	)
-; 	(return)
-; )
-;
-; (defrule MovementModule::moveWillyEastStuck
-; 	(declare (salience 0))
-; 	(directions $? east $?)
-; 	?mit<-(max_iteration ?max_iteration)
-; 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
-; 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
-; 	=>
-; 	(retract ?willy)
-; 	(retract ?it)
-; 	(moveWilly east)
-; 	(assert
-; 		(position (name willy)(x (+ ?x_w 1)) (y ?y_w))
-; 		(iteration (+ ?iteration 1))
-; 	)
-; 	(return)
-; )
-;
-; (defrule MovementModule::moveWillyWestStuck
-; 	(declare (salience 0))
-; 	(directions $? west $?)
-; 	?mit<-(max_iteration ?max_iteration)
-; 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
-; 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
-; 	=>
-; 	(retract ?willy)
-; 	(retract ?it)
-; 	(moveWilly west)
-; 	(assert
-; 		(position (name willy) (x (+ ?x_w -1)) (y ?y_w))
-; 		(iteration (+ ?iteration 1))
-; 	)
-; 	(return)
-; )
-
 ;============================================================================
 ;============================================================================
 ;============================= HazardsModule ================================
@@ -434,7 +335,7 @@
 	(position (name willy) (x ?x) (y ?y))
 	=>
 	(assert
-		(field (iteration ?it) (x ?x) (y ?y) (gravity true))
+		(field (x ?x) (y ?y) (gravity true))
 		(warning (value backtrack))
 	)
 	(focus MovementModule)
@@ -447,7 +348,7 @@
 	(position (name willy) (x ?x) (y ?y))
 	=>
 	(assert
-		(field (iteration ?it) (x ?x) (y ?y) (gravity true))
+		(field (x ?x) (y ?y) (gravity true))
 		(warning (value backtrack))
 	)
 	(focus MovementModule)
@@ -460,7 +361,7 @@
 	(position (name willy) (x ?x) (y ?y))
 	=>
 	(assert
-		(field (iteration ?it) (x ?x) (y ?y) (noise true))
+		(field (x ?x) (y ?y) (noise true))
 		(warning (value backtrack))
 	)
 	(focus MovementModule)
@@ -471,10 +372,17 @@
 	(iteration ?it)
 	(percepts )
 	(position (name willy) (x ?x) (y ?y))
+	(not (field (x ?x) (y ?y)))
 	=>
 	(assert
-		(field (iteration ?it) (x ?x) (y ?y))
+		(field (x ?x) (y ?y))
 	)
+	(focus MovementModule)
+)
+
+(defrule HazardsModule::passToMovementModule
+	(position (name willy) (x ?x_w) (y ?y_w))
+	=>
 	(focus MovementModule)
 )
 
@@ -558,13 +466,16 @@
 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?w<-(position (name willy) (x ?xw)              (y ?y))
 	?a<-(position (name alien) (x ?xa&:(< ?xw ?xa)) (y ?y))
+	?s<-(shoot)
 	=>
+	(retract ?s)
 	(retract ?a)
 	(retract ?mit)
 	(assert
 		(max_iteration (+ ?max_iteration -1))
 	)
 	(fireLaser east)
+	(assert (disparo east))
 )
 
 (defrule HazardsModule::shoot_alien_left
@@ -574,13 +485,16 @@
 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?w<-(position (name willy) (x ?xw)              (y ?y))
 	?a<-(position (name alien) (x ?xa&:(> ?xw ?xa)) (y ?y))
+	?s<-(shoot)
 	=>
+	(retract ?s)
 	(retract ?a)
 	(retract ?mit)
 	(assert
 		(max_iteration (+ ?max_iteration -1))
 	)
 	(fireLaser west)
+	(assert (disparo west))
 )
 
 (defrule HazardsModule::shoot_alien_up
@@ -589,13 +503,16 @@
 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?w<-(position (name willy) (x ?x) (y ?yw))
 	?a<-(position (name alien) (x ?x) (y ?ya&:(< ?yw ?ya)))
+	?s<-(shoot)
 	=>
+	(retract ?s)
 	(retract ?a)
 	(retract ?mit)
 	(assert
 		(max_iteration (+ ?max_iteration -1))
 	)
 	(fireLaser north)
+	(assert (disparo north))
 )
 
 (defrule HazardsModule::shoot_alien_down
@@ -604,11 +521,96 @@
 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?w<-(position (name willy) (x ?x) (y ?yw))
 	?a<-(position (name alien) (x ?x) (y ?ya&:(> ?yw ?ya)))
+	?s<-(shoot)
 	=>
+	(retract ?s)
 	(retract ?a)
 	(retract ?mit)
 	(assert
 		(max_iteration (+ ?max_iteration -1))
 	)
 	(fireLaser south)
+	(assert (disparo south))
+)
+
+;MOVERSE TRAS DISPARO
+
+(defrule HazardsModule::moverseNorteDespuesDisparo
+	(declare (salience 5))
+	?d<-(disparo north)
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
+	?w<-(position (name willy) (x ?x_w) (y ?y_w))
+	?m<-(movimientos-contrarios $?valores)
+	=>
+	(retract ?d)
+	(retract ?w)
+	(retract ?m)
+	(retract ?it)
+	(assert
+		(position (name willy)(x ?x_w) (y (+ ?y_w 1)))
+		(iteration (+ ?iteration 1))
+	)
+	(moveWilly north)
+	(assert (movimientos-contrarios south $?valores))
+)
+
+(defrule HazardsModule::moverseSurDespuesDisparo
+	(declare (salience 5))
+	?d<-(disparo south)
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
+	?w<-(position (name willy) (x ?x_w) (y ?y_w))
+	?m<-(movimientos-contrarios $?valores)
+	=>
+	(retract ?d)
+	(retract ?w)
+	(retract ?m)
+	(retract ?it)
+	(assert
+		(position (name willy)(x ?x_w) (y (- ?y_w 1)))
+		(iteration (+ ?iteration 1))
+	)
+	(moveWilly south)
+	(assert (movimientos-contrarios north $?valores))
+)
+
+(defrule HazardsModule::moverseEsteDespuesDisparo
+	(declare (salience 5))
+	?d<-(disparo east)
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
+	?w<-(position (name willy) (x ?x_w) (y ?y_w))
+	?m<-(movimientos-contrarios $?valores)
+	=>
+	(retract ?d)
+	(retract ?w)
+	(retract ?m)
+	(retract ?it)
+	(assert
+		(position (name willy)(x (+ ?x_w 1)) (y ?y_w))
+		(iteration (+ ?iteration 1))
+	)
+	(moveWilly east)
+	(assert (movimientos-contrarios west $?valores))
+)
+
+(defrule HazardsModule::moverseOesteDespuesDisparo
+	(declare (salience 5))
+	?d<-(disparo west)
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
+	?w<-(position (name willy) (x ?x_w) (y ?y_w))
+	?m<-(movimientos-contrarios $?valores)
+	=>
+	(retract ?d)
+	(retract ?w)
+	(retract ?m)
+	(retract ?it)
+	(assert
+		(position (name willy)(x (- ?x_w 1)) (y ?y_w))
+		(iteration (+ ?iteration 1))
+	)
+	(moveWilly west)
+	(assert (movimientos-contrarios east $?valores))
 )
