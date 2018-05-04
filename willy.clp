@@ -43,6 +43,8 @@
 	(repeat)
 )
 
+; Los modulo se gestionan desde el modulo myMAIN, este va enfocando modulo a modulo en serie y en el mismo orden siempre que al acabar la anterior iteracion de recorrido de módulos (HazardsModule > AfterHazardsModule > MovementModule) exista "(repeat)", estos se concatenan asertando y comprovando instancias como "(passToAfterHazardsModule)" ó "(passToMovementModule)" para asegurar, finalmente el orden lo ma
+
 (defrule myMAIN::passToHazardsModule
 	(declare (salience 300))
 	?ok<-(repeat)
