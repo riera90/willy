@@ -222,6 +222,54 @@
 	)
 )
 
+(defrule AfterHazardsModule::locate_alien_single_point_from_bottom
+	(declare (salience 3))
+	?n1<-(field(x ?x1)                   (y ?y1)                   (noise true) )
+	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 1)))(y ?y2&:(= ?y2 (+ ?y1 0)))(noise false))
+	?n3<-(field(x ?x3&:(= ?x3 (+ ?x1 -1)))(y ?y3&:(= ?y3 (+ ?y1 0)))(noise false))
+	?n4<-(field(x ?x4&:(= ?x4 (+ ?x1 0)))(y ?y4&:(= ?y4 (+ ?y1 -1)))(noise false))
+	=>
+	(assert
+		(position (name alien)(x (+ ?x1 0))(y (+ ?y1 1)))
+	)
+)
+
+(defrule AfterHazardsModule::locate_alien_single_point_from_top
+	(declare (salience 3))
+	?n1<-(field(x ?x1)                    (y ?y1)                   (noise true) )
+	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 1)))(y ?y2&:(= ?y2 (+ ?y1 0)))(noise false))
+	?n3<-(field(x ?x3&:(= ?x3 (+ ?x1 -1)))(y ?y3&:(= ?y3 (+ ?y1 0)))(noise false))
+	?n4<-(field(x ?x4&:(= ?x4 (+ ?x1 0)))(y ?y4&:(= ?y4 (+ ?y1 1)))(noise false))
+	=>
+	(assert
+		(position (name alien)(x (+ ?x1 0))(y (+ ?y1 -1)))
+	)
+)
+
+(defrule AfterHazardsModule::locate_alien_single_point_from_right
+	(declare (salience 3))
+	?n1<-(field(x ?x1)                    (y ?y1)                   (noise true) )
+	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 0)))(y ?y2&:(= ?y2 (+ ?y1 1)))(noise false))
+	?n3<-(field(x ?x3&:(= ?x3 (+ ?x1 0)))(y ?y3&:(= ?y3 (+ ?y1 -1)))(noise false))
+	?n4<-(field(x ?x4&:(= ?x4 (+ ?x1 1)))(y ?y4&:(= ?y4 (+ ?y1 0)))(noise false))
+	=>
+	(assert
+		(position (name alien)(x (+ ?x1 -1))(y (+ ?y1 0)))
+	)
+)
+
+; (defrule AfterHazardsModule::locate_alien_single_point_from_left
+; 	(declare (salience 3))
+; 	?n1<-(field(x ?x1)                    (y ?y1)                   (noise true) )
+; 	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 0)))(y ?y2&:(= ?y2 (+ ?y1 1)))(noise false))
+; 	?n3<-(field(x ?x3&:(= ?x3 (+ ?x1 0)))(y ?y3&:(= ?y3 (+ ?y1 -1)))(noise false))
+; 	?n4<-(field(x ?x4&:(= ?x4 (+ ?x1 -1)))(y ?y4&:(= ?y4 (+ ?y1 0)))(noise false))
+; 	=>
+; 	(assert
+; 		(position (name alien)(x (+ ?x1 1))(y (+ ?y1 0)))
+; 	)
+; )
+
 ;============================================================================
 ; alien elimination
 ;============================================================================
