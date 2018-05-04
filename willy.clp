@@ -35,16 +35,32 @@
 	(max_iteration 999)
 	(position (name willy))
 	(movimientos-contrarios)
-	(shoot)
+	(module_iteration 0)
 )
 
-(defrule myMAIN::passTo
-	(declare (salience 100))
-	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
+(defrule myMAIN::passToHazardsModule
+	(declare (salience 300))
+	?moduleit<-(module_iteration ?it)
 	=>
 	(focus HazardsModule)
+)
+
+(defrule myMAIN::passToAfterHazardsModule
+	(declare (salience 200))
+	?moduleit<-(module_iteration ?it)
+	=>
 	(focus AfterHazardsModule)
+)
+
+(defrule myMAIN::passToMovementModule
+	(declare (salience 100))
+	?moduleit<-(module_iteration ?it)
+	=>
 	(focus MovementModule)
+	(retract ?moduleit)
+	(assert
+		(module_iteration (+ ?it 1))
+	)
 )
 
 
@@ -206,9 +222,7 @@
 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?w<-(position (name willy) (x ?xw)              (y ?y))
 	?a<-(position (name alien) (x ?xa&:(< ?xw ?xa)) (y ?y))
-	?s<-(shoot)
 	=>
-	(retract ?s)
 	(retract ?a)
 	(retract ?it)
 	(assert
@@ -224,9 +238,7 @@
 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?w<-(position (name willy) (x ?xw)              (y ?y))
 	?a<-(position (name alien) (x ?xa&:(> ?xw ?xa)) (y ?y))
-	?s<-(shoot)
 	=>
-	(retract ?s)
 	(retract ?a)
 	(retract ?it)
 	(assert
@@ -237,13 +249,12 @@
 
 (defrule AfterHazardsModule::shoot_alien_up
 	(declare (salience 4))
+	(hasLaser)
 	?mit<-(max_iteration ?max_iteration)
 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?w<-(position (name willy) (x ?x) (y ?yw))
 	?a<-(position (name alien) (x ?x) (y ?ya&:(< ?yw ?ya)))
-	?s<-(shoot)
 	=>
-	(retract ?s)
 	(retract ?a)
 	(retract ?it)
 	(assert
@@ -254,13 +265,12 @@
 
 (defrule AfterHazardsModule::shoot_alien_down
 	(declare (salience 4))
+	(hasLaser)
 	?mit<-(max_iteration ?max_iteration)
 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?w<-(position (name willy) (x ?x) (y ?yw))
 	?a<-(position (name alien) (x ?x) (y ?ya&:(> ?yw ?ya)))
-	?s<-(shoot)
 	=>
-	(retract ?s)
 	(retract ?a)
 	(retract ?it)
 	(assert
