@@ -42,7 +42,7 @@
 	(repeat)
 )
 
-; Los modulo se gestionan desde el modulo myMAIN, este va enfocando modulo a modulo en serie y en el mismo orden siempre que al acabar la anterior iteracion de recorrido de módulos (HazardsModule > AfterHazardsModule > MovementModule) exista "(repeat)", estos se concatenan asertando y comprovando instancias como "(passToAfterHazardsModule)" o "(passToMovementModule)" para asegururar el correcto orden de entrada de los distintos módulos
+; Los modulo se gestionan desde el modulo myMAIN, este va enfocando modulo a modulo en serie y en el mismo orden siempre que al acabar la anterior iteracion de recorrido de módulos (HazardsModule > AfterHazardsModule > MovementModule) exista "(repeat)", estos se concatenan asertando y comprovando instancias como "(passToAfterHazardsModule)" o "(passToMovementModule)" para asegurar el correcto orden de entrada de los distintos módulos
 
 (defrule myMAIN::passToHazardsModule
 	?ok<-(repeat); detecta que hay que continuar (no se ha a cabado) (condicion de paso)
