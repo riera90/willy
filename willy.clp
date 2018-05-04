@@ -335,10 +335,10 @@
 	(position (name willy) (x ?x) (y ?y))
 	=>
 	(assert
-		(field (x ?x) (y ?y) (gravity true))
+		(field (x ?x) (y ?y) (gravity true)(noise true))
 		(warning (value backtrack))
 	)
-	(focus MovementModule)
+	(focus AfterHazardsModule)
 )
 
 (defrule HazardsModule::blackHole
@@ -351,7 +351,7 @@
 		(field (x ?x) (y ?y) (gravity true))
 		(warning (value backtrack))
 	)
-	(focus MovementModule)
+	(focus AfterHazardsModule)
 )
 
 (defrule HazardsModule::alien
@@ -364,7 +364,7 @@
 		(field (x ?x) (y ?y) (noise true))
 		(warning (value backtrack))
 	)
-	(focus MovementModule)
+	(focus AfterHazardsModule)
 )
 
 (defrule HazardsModule::noHazardmax
@@ -377,11 +377,21 @@
 	(assert
 		(field (x ?x) (y ?y))
 	)
-	(focus MovementModule)
+	(focus AfterHazardsModule)
 )
 
-(defrule HazardsModule::passToMovementModule
-	(position (name willy) (x ?x_w) (y ?y_w))
+
+;============================================================================
+;============================================================================
+;========================== AfterHazardsModule =============================
+;============================================================================
+;============================================================================
+
+(defmodule AfterHazardsModule (import InternalFunctions deffunction ?ALL) (import myMAIN deftemplate ?ALL) (export ?ALL))
+
+(defrule AfterHazardsModule::nothing_to_do
+	(declare (salience 0))
+	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
 	(focus MovementModule)
 )
@@ -390,9 +400,9 @@
 ; alien locate
 ;============================================================================
 
-(defrule HazardsModule::locate_alien_middle_horizontal
+(defrule AfterHazardsModule::locate_alien_middle_horizontal
 	(declare (salience 3))
-	?n1<-(field (x ?x1)                   (y ?y)(noise true))
+	?n1<-(field (x ?x1)                    (y ?y)(noise true))
 	?n2<-(field (x ?x2&:(= ?x1 (+ ?x2 -2)))(y ?y)(noise true))
 	=>
 	(assert
@@ -400,7 +410,7 @@
 	)
 )
 
-(defrule HazardsModule::locate_alien_middle_vertical
+(defrule AfterHazardsModule::locate_alien_middle_vertical
 	(declare (salience 3))
 	?n1<-(field (x ?x)(y ?y1)                    (noise true))
 	?n2<-(field (x ?x)(y ?y2&:(= ?y1 (+ ?y2 -2)))(noise true))
@@ -410,7 +420,7 @@
 	)
 )
 
-(defrule HazardsModule::locate_alien_oblique_negative_alien_up
+(defrule AfterHazardsModule::locate_alien_oblique_negative_alien_up
 	(declare (salience 3))
 	?n1<-(field(x ?x1)                   (y ?y1)                    (noise true) )
 	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 1)))(y ?y2&:(= ?y2 (+ ?y1 -1)))(noise true) )
@@ -421,7 +431,7 @@
 	)
 )
 
-(defrule HazardsModule::locate_alien_oblique_negative_alien_down
+(defrule AfterHazardsModule::locate_alien_oblique_negative_alien_down
 	(declare (salience 3))
 	?n1<-(field(x ?x1)                   (y ?y1)                    (noise true) )
 	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 1)))(y ?y2&:(= ?y2 (+ ?y1 -1)))(noise true) )
@@ -432,7 +442,7 @@
 	)
 )
 
-(defrule HazardsModule::locate_alien_oblique_positive_alien_up
+(defrule AfterHazardsModule::locate_alien_oblique_positive_alien_up
 	(declare (salience 3))
 	?n1<-(field(x ?x1)                   (y ?y1)                   (noise true) )
 	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 1)))(y ?y2&:(= ?y2 (+ ?y1 1)))(noise true) )
@@ -443,7 +453,7 @@
 	)
 )
 
-(defrule HazardsModule::locate_alien_oblique_positive_alien_down
+(defrule AfterHazardsModule::locate_alien_oblique_positive_alien_down
 	(declare (salience 3))
 	?n1<-(field(x ?x1)                   (y ?y1)                   (noise true) )
 	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 1)))(y ?y2&:(= ?y2 (+ ?y1 1)))(noise true) )
@@ -454,12 +464,11 @@
 	)
 )
 
-
 ;============================================================================
 ; alien elimination
 ;============================================================================
 
-(defrule HazardsModule::shoot_alien_right
+(defrule AfterHazardsModule::shoot_alien_right
 	(declare (salience 4))
 	(hasLaser)
 	?mit<-(max_iteration ?max_iteration)
@@ -470,15 +479,14 @@
 	=>
 	(retract ?s)
 	(retract ?a)
-	(retract ?mit)
+	(retract ?it)
 	(assert
-		(max_iteration (+ ?max_iteration -1))
+		(iteration (+ ?iteration 1))
 	)
 	(fireLaser east)
-	(assert (disparo east))
 )
 
-(defrule HazardsModule::shoot_alien_left
+(defrule AfterHazardsModule::shoot_alien_left
 	(declare (salience 4))
 	(hasLaser)
 	?mit<-(max_iteration ?max_iteration)
@@ -489,15 +497,14 @@
 	=>
 	(retract ?s)
 	(retract ?a)
-	(retract ?mit)
+	(retract ?it)
 	(assert
-		(max_iteration (+ ?max_iteration -1))
+		(iteration (+ ?iteration 1))
 	)
 	(fireLaser west)
-	(assert (disparo west))
 )
 
-(defrule HazardsModule::shoot_alien_up
+(defrule AfterHazardsModule::shoot_alien_up
 	(declare (salience 4))
 	?mit<-(max_iteration ?max_iteration)
 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
@@ -507,15 +514,14 @@
 	=>
 	(retract ?s)
 	(retract ?a)
-	(retract ?mit)
+	(retract ?it)
 	(assert
-		(max_iteration (+ ?max_iteration -1))
+		(iteration (+ ?iteration 1))
 	)
 	(fireLaser north)
-	(assert (disparo north))
 )
 
-(defrule HazardsModule::shoot_alien_down
+(defrule AfterHazardsModule::shoot_alien_down
 	(declare (salience 4))
 	?mit<-(max_iteration ?max_iteration)
 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
@@ -525,92 +531,9 @@
 	=>
 	(retract ?s)
 	(retract ?a)
-	(retract ?mit)
+	(retract ?it)
 	(assert
-		(max_iteration (+ ?max_iteration -1))
+		(iteration (+ ?iteration 1))
 	)
 	(fireLaser south)
-	(assert (disparo south))
-)
-
-;MOVERSE TRAS DISPARO
-
-(defrule HazardsModule::moverseNorteDespuesDisparo
-	(declare (salience 5))
-	?d<-(disparo north)
-	?mit<-(max_iteration ?max_iteration)
-	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
-	?w<-(position (name willy) (x ?x_w) (y ?y_w))
-	?m<-(movimientos-contrarios $?valores)
-	=>
-	(retract ?d)
-	(retract ?w)
-	(retract ?m)
-	(retract ?it)
-	(assert
-		(position (name willy)(x ?x_w) (y (+ ?y_w 1)))
-		(iteration (+ ?iteration 1))
-	)
-	(moveWilly north)
-	(assert (movimientos-contrarios south $?valores))
-)
-
-(defrule HazardsModule::moverseSurDespuesDisparo
-	(declare (salience 5))
-	?d<-(disparo south)
-	?mit<-(max_iteration ?max_iteration)
-	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
-	?w<-(position (name willy) (x ?x_w) (y ?y_w))
-	?m<-(movimientos-contrarios $?valores)
-	=>
-	(retract ?d)
-	(retract ?w)
-	(retract ?m)
-	(retract ?it)
-	(assert
-		(position (name willy)(x ?x_w) (y (- ?y_w 1)))
-		(iteration (+ ?iteration 1))
-	)
-	(moveWilly south)
-	(assert (movimientos-contrarios north $?valores))
-)
-
-(defrule HazardsModule::moverseEsteDespuesDisparo
-	(declare (salience 5))
-	?d<-(disparo east)
-	?mit<-(max_iteration ?max_iteration)
-	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
-	?w<-(position (name willy) (x ?x_w) (y ?y_w))
-	?m<-(movimientos-contrarios $?valores)
-	=>
-	(retract ?d)
-	(retract ?w)
-	(retract ?m)
-	(retract ?it)
-	(assert
-		(position (name willy)(x (+ ?x_w 1)) (y ?y_w))
-		(iteration (+ ?iteration 1))
-	)
-	(moveWilly east)
-	(assert (movimientos-contrarios west $?valores))
-)
-
-(defrule HazardsModule::moverseOesteDespuesDisparo
-	(declare (salience 5))
-	?d<-(disparo west)
-	?mit<-(max_iteration ?max_iteration)
-	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
-	?w<-(position (name willy) (x ?x_w) (y ?y_w))
-	?m<-(movimientos-contrarios $?valores)
-	=>
-	(retract ?d)
-	(retract ?w)
-	(retract ?m)
-	(retract ?it)
-	(assert
-		(position (name willy)(x (- ?x_w 1)) (y ?y_w))
-		(iteration (+ ?iteration 1))
-	)
-	(moveWilly west)
-	(assert (movimientos-contrarios east $?valores))
 )
