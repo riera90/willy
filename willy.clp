@@ -83,21 +83,31 @@
 
 (defmodule HazardsModule (import InternalFunctions deffunction ?ALL) (import myMAIN deftemplate ?ALL) (export ?ALL))
 
+;Estas reglas son las que nos sirven para almacenar informacion sobre una casilla, es decir, si sobre ella nos llega
+;alguna percepcion o no nos llega nada
+
 (defrule HazardsModule::blackHole_and_alien
-	(declare (salience 2))
+	(declare (salience 2)) ; A esta se le da mas prioridad para que primero comprueba si se reciben en la casilla en la
+	;que esta willy las dos percepciones al mismo tiempo
 	(iteration ?it)
 	(or
 		(percepts Pull Noise)
 		(percepts Noise Pull)
-	)
-	(position (name willy) (x ?x) (y ?y))
+	); La regla se activa con cualquiera de estos dos hechos
+	(position (name willy) (x ?x) (y ?y)) ; Necesito saber la posicion en la que esta willy ya que van a ser los valores
+	;que tome el campo
 	=>
 	(assert
-		(field (x ?x) (y ?y) (gravity true)(noise true))
-		(warning (value backtrack))
+		(field (x ?x) (y ?y) (gravity true) (noise true)) ; pongo a true tanto la gravedad como el ruido
+		(warning (value backtrack)) ; Afirmo este hecho que será utilizado luego para las reglas de movimiento backtract
+		;Ya que si detecto un peligro en la casilla en la que estoy lo que hace willy es retroceder
+		;Por tanto esto es un indicador de que existe peligro en esa casilla
 	)
-	(return)
+	(return) ; Saco de la pila el modulo peligro, ya que en este solo se puede activar una de las reglas que hay por casilla
 )
+
+;El resto de reglas son iguales solo que cambian el tipo de percepciones son las que se activan
+
 
 (defrule HazardsModule::blackHole
 	(declare (salience 1))
@@ -125,12 +135,15 @@
 	(return)
 )
 
+;En caso de no detectarse ningún peligro se activa esta regla
+
 (defrule HazardsModule::noHazardmax
 	(declare (salience 1))
 	(iteration ?it)
 	(percepts )
 	(position (name willy) (x ?x) (y ?y))
-	(not (field (x ?x) (y ?y)))
+	(not (field (x ?x) (y ?y))) ; Coloco esto ya que en el retroceso se vuelve a visitar casillas seguras que 
+	;ya se habian visitado. Por tanto si no coloco esto se volverian a afirmas esos hechos
 	=>
 	(assert
 		(field (x ?x) (y ?y))
