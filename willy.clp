@@ -36,31 +36,38 @@
 	(position (name willy))
 	(movimientos-contrarios)
 	(module_iteration 0)
+	(repeat)
 )
 
 (defrule myMAIN::passToHazardsModule
 	(declare (salience 300))
+	?ok<-(repeat)
 	?moduleit<-(module_iteration ?it)
 	=>
+	(retract ?ok)
 	(focus HazardsModule)
+	(assert
+		(passToAfterHazardsModule)
+	)
 )
 
 (defrule myMAIN::passToAfterHazardsModule
 	(declare (salience 200))
-	?moduleit<-(module_iteration ?it)
+	?ok<-(passToAfterHazardsModule)
 	=>
+	(retract ?ok)
 	(focus AfterHazardsModule)
+	(assert
+		(passToMovementModule)
+	)
 )
 
 (defrule myMAIN::passToMovementModule
 	(declare (salience 100))
-	?moduleit<-(module_iteration ?it)
+	?ok<-(passToMovementModule)
 	=>
 	(focus MovementModule)
-	(retract ?moduleit)
-	(assert
-		(module_iteration (+ ?it 1))
-	)
+	(retract ?ok)
 )
 
 
@@ -138,6 +145,8 @@
 
 (defrule AfterHazardsModule::nothing_to_do
 	(declare (salience 0))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w))
 	=>
 	(return)
@@ -159,6 +168,8 @@
 
 (defrule AfterHazardsModule::locate_alien_middle_vertical
 	(declare (salience 3))
+	?mit<-(max_iteration ?max_iteration)
+	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration))
 	?n1<-(field (x ?x)(y ?y1)                    (noise true))
 	?n2<-(field (x ?x)(y ?y2&:(= ?y1 (+ ?y2 -2)))(noise true))
 	=>
@@ -227,6 +238,7 @@
 	(retract ?it)
 	(assert
 		(iteration (+ ?iteration 1))
+		(killed)
 	)
 	(fireLaser east)
 )
@@ -243,6 +255,7 @@
 	(retract ?it)
 	(assert
 		(iteration (+ ?iteration 1))
+		(killed)
 	)
 	(fireLaser west)
 )
@@ -259,6 +272,7 @@
 	(retract ?it)
 	(assert
 		(iteration (+ ?iteration 1))
+		(killed)
 	)
 	(fireLaser north)
 )
@@ -275,8 +289,20 @@
 	(retract ?it)
 	(assert
 		(iteration (+ ?iteration 1))
+		(killed)
 	)
 	(fireLaser south)
+)
+
+(defrule AfterHazardsModule::retract_warning_when_kill
+	(declare (salience 4))
+	?k<-(killed)
+	?w<-(warning (value backtrack))
+	(position (name willy) (x ?x) (y ?y))
+	(field(x ?x)(y ?y)(gravity false)(noise true))
+	=>
+	(retract ?k)
+	(retract ?w)
 )
 
 ;===========================================================================
@@ -307,6 +333,7 @@
 		(assert (iteration (+ ?iteration 1)))
 		(assert (position (name willy) (x ?x) (y (- ?y 1))))
 		(assert (movimientos-contrarios $?valores))
+		(assert (repeat))
 		(return)
 	)
 
@@ -326,6 +353,7 @@
 		(assert (iteration (+ ?iteration 1)))
 		(assert (position (name willy) (x ?x) (y (+ ?y 1))))
 		(assert (movimientos-contrarios $?valores))
+		(assert (repeat))
 		(return)
 	)
 
@@ -345,6 +373,7 @@
 		(assert (iteration (+ ?iteration 1)))
 		(assert (position (name willy) (x (+ ?x 1)) (y ?y)))
 		(assert (movimientos-contrarios $?valores))
+		(assert (repeat))
 		(return)
 	)
 
@@ -364,6 +393,7 @@
 		(assert (iteration (+ ?iteration 1)))
 		(assert (position (name willy) (x (- ?x 1)) (y ?y)))
 		(assert (movimientos-contrarios $?valores))
+		(assert (repeat))
 		(return)
 	)
 
@@ -392,6 +422,7 @@
 		(iteration (+ ?iteration 1))
 	)
 	(assert (movimientos-contrarios south $?valores))
+	(assert (repeat))
 	(return)
 )
 
@@ -417,6 +448,7 @@
 		(iteration (+ ?iteration 1))
 	)
 	(assert (movimientos-contrarios north $?valores))
+	(assert (repeat))
 	(return)
 )
 
@@ -441,6 +473,7 @@
 		(iteration (+ ?iteration 1))
 	)
 	(assert (movimientos-contrarios west $?valores))
+	(assert (repeat))
 	(return)
 )
 
@@ -465,6 +498,7 @@
 		(iteration (+ ?iteration 1))
 	)
 	(assert (movimientos-contrarios east $?valores))
+	(assert (repeat))
 	(return)
 )
 
@@ -489,6 +523,7 @@
 		(iteration (+ ?iteration 1))
 	)
 	(assert (movimientos-contrarios $?valores))
+	(assert (repeat))
 	(return)
 )
 
@@ -508,6 +543,7 @@
 		(iteration (+ ?iteration 1))
 	)
 	(assert (movimientos-contrarios $?valores))
+	(assert (repeat))
 	(return)
 )
 
@@ -528,6 +564,7 @@
 		(iteration (+ ?iteration 1))
 	)
 	(assert (movimientos-contrarios $?valores))
+	(assert (repeat))
 	(return)
 )
 
@@ -548,5 +585,6 @@
 		(iteration (+ ?iteration 1))
 	)
 	(assert (movimientos-contrarios $?valores))
+	(assert (repeat))
 	(return)
 )
