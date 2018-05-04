@@ -42,36 +42,33 @@
 	(repeat)
 )
 
-; Los modulo se gestionan desde el modulo myMAIN, este va enfocando modulo a modulo en serie y en el mismo orden siempre que al acabar la anterior iteracion de recorrido de módulos (HazardsModule > AfterHazardsModule > MovementModule) exista "(repeat)", estos se concatenan asertando y comprovando instancias como "(passToAfterHazardsModule)" ó "(passToMovementModule)" para asegururar el correcto orden de entrada de los distintos módulos
+; Los modulo se gestionan desde el modulo myMAIN, este va enfocando modulo a modulo en serie y en el mismo orden siempre que al acabar la anterior iteracion de recorrido de módulos (HazardsModule > AfterHazardsModule > MovementModule) exista "(repeat)", estos se concatenan asertando y comprovando instancias como "(passToAfterHazardsModule)" o "(passToMovementModule)" para asegururar el correcto orden de entrada de los distintos módulos
 
 (defrule myMAIN::passToHazardsModule
-	(declare (salience 300))
-	?ok<-(repeat)
+	?ok<-(repeat); detecta que hay que continuar (no se ha a cabado) (condicion de paso)
 	=>
-	(retract ?ok)
-	(focus HazardsModule)
+	(retract ?ok) ; elimina el hecho para que en el modulo de movientos, si hay movimientos restantes se aserte de nuevo
+	(focus HazardsModule) ; se pasa el control a el modulo de peligros
 	(assert
-		(passToAfterHazardsModule)
+		(passToAfterHazardsModule) ; se aserta la condicion de paso al siguiente modulo
 	)
 )
 
 (defrule myMAIN::passToAfterHazardsModule
-	(declare (salience 200))
-	?ok<-(passToAfterHazardsModule)
+	?ok<-(passToAfterHazardsModule) ; se comprueba la condicion de paso a este modulo
 	=>
-	(retract ?ok)
-	(focus AfterHazardsModule)
+	(retract ?ok) ; se elimina dicha condicion, ya que se ha entrado
+	(focus AfterHazardsModule) ; se pasa a ejecutar el modulo de post deteccion de peligros
 	(assert
-		(passToMovementModule)
+		(passToMovementModule) ; se aserta la condicion de paso al último módulo
 	)
 )
 
 (defrule myMAIN::passToMovementModule
-	(declare (salience 100))
-	?ok<-(passToMovementModule)
+	?ok<-(passToMovementModule) ; se comprueba la condicion de paso a este modulo
 	=>
-	(focus MovementModule)
-	(retract ?ok)
+	(retract ?ok) ; se elimina dicha condicion, ya que se ha entrados
+	(focus MovementModule) ; finalmente se pasa el foco al modulo de movimientos
 )
 
 
@@ -191,18 +188,18 @@
 ; N -> Noise
 ; A -> Alien
 
-; Estas opciones se rotan 90 grados 3 veces para cubrir todas las posibles opciones
+; Estas opciones se rotan 90 grados 3 veces para cubrir todas las posibles  opciones (exepto la 1, que se rota una vez 90 grados)
 ; Si se detecta un alienigena se aserta una instancia usando una plantilla, un ejemplo seria "(position (name alien)(x 5)(y 3))"
 
 ; Este conjunto de reglas es la opcion 1:
 ; 		N A N
 (defrule AfterHazardsModule::locate_alien_middle_horizontal
 	(declare (salience 3))
-	?n1<-(field (x ?x1)                    (y ?y)(noise true))
-	?n2<-(field (x ?x2&:(= ?x1 (+ ?x2 -2)))(y ?y)(noise true))
+	?n1<-(field (x ?x1)                    (y ?y)(noise true)) ; detecta la primera casilla con ruido (casilla base)
+	?n2<-(field (x ?x2&:(= ?x1 (+ ?x2 -2)))(y ?y)(noise true)) ; detecta la segunda casilla con ruido de forma relativa a la anterior
 	=>
 	(assert
-		(position (name alien)(x (+ ?x1 1))(y ?y))
+		(position (name alien)(x (+ ?x1 1))(y ?y)) ; aserta la posicion del alien
 	)
 )
 
@@ -224,10 +221,13 @@
 
 (defrule AfterHazardsModule::locate_alien_oblique_negative_alien_up
 	(declare (salience 3))
-	?n1<-(field(x ?x1)                   (y ?y1)                    (noise true) )
+	; detecta las dos casillas con ruido, una de forma global y la otra de forma relativa a la primera
+	?n1<-(field(x ?x1)                   (y ?y1)                    (noise true) ) ;(casilla base)
 	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 1)))(y ?y2&:(= ?y2 (+ ?y1 -1)))(noise true) )
+	; detecta la casilla segura de forma relativa
 	?n3<-(field(x ?x3&:(= ?x3 (+ ?x1 0)))(y ?y3&:(= ?y3 (+ ?y1 -1)))(noise false))
 	=>
+	;aserta la posicion del alien
 	(assert
 		(position (name alien)(x (+ ?x1 1))(y (+ ?y1 0)))
 	)
@@ -259,7 +259,7 @@
 	(declare (salience 3))
 	?n1<-(field(x ?x1)                   (y ?y1)                   (noise true) )
 	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 1)))(y ?y2&:(= ?y2 (+ ?y1 1)))(noise true) )
-	?n3<-(field(x ?x3&:(= ?x3 ((position (name alien)(x 5)(y 3))+ ?x1 0)))(y ?y3&:(= ?y3 (+ ?y1 1)))(noise false))
+	?n3<-(field(x ?x3&:(= ?x3 (+ ?x1 0)))(y ?y3&:(= ?y3 (+ ?y1 1)))(noise false))
 	=>
 	(assert
 		(position (name alien)(x (+ ?x1 1))(y (+ ?y1 0)))
@@ -273,7 +273,9 @@
 
 (defrule AfterHazardsModule::locate_alien_single_point_from_bottom
 	(declare (salience 3))
+	; detecta la casilla con ruido (casilla base)
 	?n1<-(field(x ?x1)                   (y ?y1)                   (noise true) )
+	; detecta las tres casillas seguras colocadas de manera relativa a la anterior
 	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1  1)))(y ?y2&:(= ?y2 (+ ?y1 0)))(noise false))
 	?n3<-(field(x ?x3&:(= ?x3 (+ ?x1 -1)))(y ?y3&:(= ?y3 (+ ?y1 0)))(noise false))
 	?n4<-(field(x ?x4&:(= ?x4 (+ ?x1 0)))(y ?y4&:(= ?y4 (+ ?y1 -1)))(noise false))
@@ -297,7 +299,7 @@
 
 (defrule AfterHazardsModule::locate_alien_single_point_from_right
 	(declare (salience 3))
-	?n1<-(field(x ?x1)                    (y ?y1)                   (noise true) )
+	?n1<-(field(x ?x1)                   (y ?y1)                    (noise true) )
 	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 0)))(y ?y2&:(= ?y2 (+ ?y1  1)))(noise false))
 	?n3<-(field(x ?x3&:(= ?x3 (+ ?x1 0)))(y ?y3&:(= ?y3 (+ ?y1 -1)))(noise false))
 	?n4<-(field(x ?x4&:(= ?x4 (+ ?x1 1)))(y ?y4&:(= ?y4 (+ ?y1  0)))(noise false))
