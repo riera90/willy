@@ -39,16 +39,14 @@
 	(max_iteration 999) ; Hecho para definir el numero maximo de iteraciones que podemos realizar
 	(position (name willy)) ; La posicion inicial de willy es la (0,0)
 	(movimientos-contrarios) ; Hecho en el que se van a ir almacenando los movimientos opuestos a los que se realizaron
-	(module_iteration 0)
 	(repeat)
 )
 
-; Los modulo se gestionan desde el modulo myMAIN, este va enfocando modulo a modulo en serie y en el mismo orden siempre que al acabar la anterior iteracion de recorrido de módulos (HazardsModule > AfterHazardsModule > MovementModule) exista "(repeat)", estos se concatenan asertando y comprovando instancias como "(passToAfterHazardsModule)" ó "(passToMovementModule)" para asegurar, finalmente el orden lo ma
+; Los modulo se gestionan desde el modulo myMAIN, este va enfocando modulo a modulo en serie y en el mismo orden siempre que al acabar la anterior iteracion de recorrido de módulos (HazardsModule > AfterHazardsModule > MovementModule) exista "(repeat)", estos se concatenan asertando y comprovando instancias como "(passToAfterHazardsModule)" ó "(passToMovementModule)" para asegururar el correcto orden de entrada de los distintos módulos
 
 (defrule myMAIN::passToHazardsModule
 	(declare (salience 300))
 	?ok<-(repeat)
-	?moduleit<-(module_iteration ?it)
 	=>
 	(retract ?ok)
 	(focus HazardsModule)
@@ -144,7 +142,7 @@
 	(iteration ?it)
 	(percepts )
 	(position (name willy) (x ?x) (y ?y))
-	(not (field (x ?x) (y ?y))) ; Coloco esto ya que en el retroceso se vuelve a visitar casillas seguras que 
+	(not (field (x ?x) (y ?y))) ; Coloco esto ya que en el retroceso se vuelve a visitar casillas seguras que
 	;ya se habian visitado. Por tanto si no coloco esto se volverian a afirmar esos hechos
 	=>
 	(assert
