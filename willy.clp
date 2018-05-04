@@ -173,6 +173,29 @@
 ; alien locate
 ;============================================================================
 
+; Hay tres maneras de localizar a un alien
+
+; opcion 1:
+; 		N A N
+
+; opcion 2:
+;			N A
+;			S N
+
+; opcion 3:
+;			A
+;		S N S
+;			S
+
+; S -> Safe
+; N -> Noise
+; A -> Alien
+
+; Estas opciones se rotan 90 grados 3 veces para cubrir todas las posibles opciones
+; Si se detecta un alienigena se aserta una instancia usando una plantilla, un ejemplo seria "(position (name alien)(x 5)(y 3))"
+
+; Este conjunto de reglas es la opcion 1:
+; 		N A N
 (defrule AfterHazardsModule::locate_alien_middle_horizontal
 	(declare (salience 3))
 	?n1<-(field (x ?x1)                    (y ?y)(noise true))
@@ -194,6 +217,10 @@
 		(position (name alien)(x ?x)(y (+ ?y1 1)))
 	)
 )
+
+; Este conjunto de reglas es la opcion 2:
+;			N A
+;			S N
 
 (defrule AfterHazardsModule::locate_alien_oblique_negative_alien_up
 	(declare (salience 3))
@@ -232,17 +259,22 @@
 	(declare (salience 3))
 	?n1<-(field(x ?x1)                   (y ?y1)                   (noise true) )
 	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 1)))(y ?y2&:(= ?y2 (+ ?y1 1)))(noise true) )
-	?n3<-(field(x ?x3&:(= ?x3 (+ ?x1 0)))(y ?y3&:(= ?y3 (+ ?y1 1)))(noise false))
+	?n3<-(field(x ?x3&:(= ?x3 ((position (name alien)(x 5)(y 3))+ ?x1 0)))(y ?y3&:(= ?y3 (+ ?y1 1)))(noise false))
 	=>
 	(assert
 		(position (name alien)(x (+ ?x1 1))(y (+ ?y1 0)))
 	)
 )
 
+; Este conjunto de reglas es la opcion 3:
+;			A
+;		S N S
+;			S
+
 (defrule AfterHazardsModule::locate_alien_single_point_from_bottom
 	(declare (salience 3))
 	?n1<-(field(x ?x1)                   (y ?y1)                   (noise true) )
-	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 1)))(y ?y2&:(= ?y2 (+ ?y1 0)))(noise false))
+	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1  1)))(y ?y2&:(= ?y2 (+ ?y1 0)))(noise false))
 	?n3<-(field(x ?x3&:(= ?x3 (+ ?x1 -1)))(y ?y3&:(= ?y3 (+ ?y1 0)))(noise false))
 	?n4<-(field(x ?x4&:(= ?x4 (+ ?x1 0)))(y ?y4&:(= ?y4 (+ ?y1 -1)))(noise false))
 	=>
@@ -254,9 +286,9 @@
 (defrule AfterHazardsModule::locate_alien_single_point_from_top
 	(declare (salience 3))
 	?n1<-(field(x ?x1)                    (y ?y1)                   (noise true) )
-	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 1)))(y ?y2&:(= ?y2 (+ ?y1 0)))(noise false))
+	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1  1)))(y ?y2&:(= ?y2 (+ ?y1 0)))(noise false))
 	?n3<-(field(x ?x3&:(= ?x3 (+ ?x1 -1)))(y ?y3&:(= ?y3 (+ ?y1 0)))(noise false))
-	?n4<-(field(x ?x4&:(= ?x4 (+ ?x1 0)))(y ?y4&:(= ?y4 (+ ?y1 1)))(noise false))
+	?n4<-(field(x ?x4&:(= ?x4 (+ ?x1  0)))(y ?y4&:(= ?y4 (+ ?y1 1)))(noise false))
 	=>
 	(assert
 		(position (name alien)(x (+ ?x1 0))(y (+ ?y1 -1)))
@@ -266,14 +298,16 @@
 (defrule AfterHazardsModule::locate_alien_single_point_from_right
 	(declare (salience 3))
 	?n1<-(field(x ?x1)                    (y ?y1)                   (noise true) )
-	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 0)))(y ?y2&:(= ?y2 (+ ?y1 1)))(noise false))
+	?n2<-(field(x ?x2&:(= ?x2 (+ ?x1 0)))(y ?y2&:(= ?y2 (+ ?y1  1)))(noise false))
 	?n3<-(field(x ?x3&:(= ?x3 (+ ?x1 0)))(y ?y3&:(= ?y3 (+ ?y1 -1)))(noise false))
-	?n4<-(field(x ?x4&:(= ?x4 (+ ?x1 1)))(y ?y4&:(= ?y4 (+ ?y1 0)))(noise false))
+	?n4<-(field(x ?x4&:(= ?x4 (+ ?x1 1)))(y ?y4&:(= ?y4 (+ ?y1  0)))(noise false))
 	=>
 	(assert
 		(position (name alien)(x (+ ?x1 -1))(y (+ ?y1 0)))
 	)
 )
+
+; Esta regla esta comentada ya que baja la puntuación
 
 ; (defrule AfterHazardsModule::locate_alien_single_point_from_left
 ; 	(declare (salience 3))
@@ -291,6 +325,11 @@
 ;============================================================================
 ; alien elimination
 ;============================================================================
+
+; Una vez encontrado un Alien (en el modulo anterior), se procede a su eliminación inmediata (si procede)
+; Lo mas comun es que se detecte por el caso 1 o 2, y en el caso 2 que la ultima que se descubra sea una casilla que tenga ruido, en esos casos, en el mismo ciclo de módulos, willy detectara el alien, lo matará y se movera (si procede) hacia la posicion que este ocupaba.
+
+; El siguiente conjunto de 4 reglas se activan si willy se encuentra a izquerda, a derecha, abajo o arriba de el alienigena (respectivamente) (se indica la direccion de disparo), en cuyo caso willy procedera a la eliminación de dicho alien
 
 (defrule AfterHazardsModule::shoot_alien_right
 	(declare (salience 4))
@@ -359,6 +398,9 @@
 	)
 	(fireLaser south)
 )
+
+; La siguiete regla hace la retraccion de la alerta (si procede)
+; Si la casilla tiene solo ruido esta se eliminará, si a demas contiene un aviso por gravedad, esta no se modificara, quedando la alerta de peligro en la casilla.
 
 (defrule AfterHazardsModule::retract_warning_when_kill
 	(declare (salience 4))
