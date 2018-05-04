@@ -143,7 +143,7 @@
 	(percepts )
 	(position (name willy) (x ?x) (y ?y))
 	(not (field (x ?x) (y ?y))) ; Coloco esto ya que en el retroceso se vuelve a visitar casillas seguras que 
-	;ya se habian visitado. Por tanto si no coloco esto se volverian a afirmas esos hechos
+	;ya se habian visitado. Por tanto si no coloco esto se volverian a afirmar esos hechos
 	=>
 	(assert
 		(field (x ?x) (y ?y))
