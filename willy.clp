@@ -575,21 +575,25 @@
 	(max_iteration ?max_iteration)
 	?it<-(iteration ?iteration&:(< ?iteration ?max_iteration)) ; El numero de iteracion debe de ser menor que el maximo
 	?willy<-(position (name willy) (x ?x_w) (y ?y_w)) ; Necesito almacenar la posicion del willy para modificarla ya que se desplaza
-	?m<-(movimientos-contrarios north $?valores) ; Se activa cuando el ultimo movimiento que se hizo fue hacia el sur y por tanto se almaceno norte
-	
+	?m<-(movimientos-contrarios north $?valores)
+	;Esta regla se activa cuando el ultimo movimiento que se hizo fue hacia el sur, por tanto se almaceno en movimientos-contrarios norte
+	;ya que para retroceder hay que desplazarse hacia ahi
 	=>
-	(retract ?willy)
-	(retract ?it)
-	(retract ?m)
+	(retract ?willy) ; Elimino el hecho para modificar la posicion de willy
+	(retract ?it) ; Elimino la iteracion para incrementarla
+	(retract ?m) ; Elimino el hecho movimientos ya que lo tengo que volver a afirmar sin el movimiento que acabo de hacer
 	(moveWilly north)
 	(assert
 		(position (name willy) (x ?x_w) (y (+ ?y_w 1)))
 		(iteration (+ ?iteration 1))
 	)
-	(assert (movimientos-contrarios $?valores))
+	(assert (movimientos-contrarios $?valores)) ; Elimino la posicion hacia la que se acaba de mover, en este caso norte
+	;Y afirmo el hecho con el resto de movimientos que quedaron por realizar
 	(assert (repeat))
 	(return)
 )
+
+;El resto de reglas son iguales pero retrocediendo hacia diferentes posiciones
 
 (defrule MovementModule::retrocederSur
 	(declare (salience 0))
