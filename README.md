@@ -13,7 +13,7 @@ Prácticas de Sistemas Inteligentes (Grado en Ingeniería Informática, UCO).
 
 Solved: 90% / Died 0% / Unsolved 10% / KnownCells: 44.9 / Moves: 65.8 / Score: 1413.5
 
-[logo]:(docs/score_screenshot.png)
+![logo](https://github.com/riera90/willy/blob/master/docs/score_screenshot.png)
 
 ## Documentacion del proyecto
 
