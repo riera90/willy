@@ -60,7 +60,7 @@ Para almacenar la posición tanto de  Willy como del alien utilizamos la plantil
 
 
 
-\section{Determinación del próximo movimiento}
+\section{Reglas de movimiento}
 En nuestro programa almacenamos información de las casillas que se visitan, además de las percepciones que se reciben cuando willy está situado sobre esas casillas. También almacenamos, en caso de completa seguridad, la posición en la que se encuentra el alien.
 \vspace{0.5 cm}\\
 Para almacenar la información de las casillas visitadas utilizamos la plantilla field en la que tenemos slot que almacenan la {\bf coordenada x} y {\bf coordenada y}  de la casilla y dos slot para ver si se recibe la percepción noise y la percepción {\bf gravity}, utilizando para esto los valores {\bf true} y {\bf false}.
@@ -86,7 +86,7 @@ En el programa cada vez que se ejecuta cualquiera de estas 4 reglas, se almacena
 En el caso de que no haya ninguna percepción en la casilla y tampoco se tenga ninguna casilla circunstante no visitada, lo que se activaran son las reglas {\bf retroceder'dirección'} tomando dirección los valores Norte, Sur, Este y Oeste. La finalidad de estas reglas es básicamente ver cual es el ultimo valor que se inserto en {\bf movimientos-contrarios} y se mueve hacia ese lugar, es decir, básicamente lo que hace es ir retrocediendo sobre sus pasos hasta que se vuelva a encontrar con casillas circunstante no visitadas en cuyo caso se volverán a activar las reglas {\bf moveWilly}.
 El movimiento que acaba de ejecutar del hecho movimientos-contrarios es eliminado del hecho.
 Cuando se ejecute alguna de estas reglas no se saldrá de la pila ya que lo que se busca es la activación de algunas de las reglas {\bf moveWilly} como se ha dicho antes.  Se tiene una regla de retroceso por cada uno de los posibles últimos valores que pueda haber en el hecho {\bf movimientos-contrarios}.
-\subsection{Percepción en la casilla actual en la que está willy}
+\subsection{Percepción en la casilla actual}
 Cuando willy se mueve hacia una casilla en la que se detecta alguna percepción, la estrategia que se sigue es la de retroceder. De esto se encargan las reglas {\bf backtrack}. El procedimiento sería el siguiente:
 \vspace{0.5 cm}\\
 Previamente se habría ejecutado una regla {\bf moveWilly} que habría desplazado a willy a una casilla no visitada. Ahora se analizaría esta casilla en el modulo {\bf Hazards}. Si esa casilla presenta alguna percepción se afirma un hecho {\bf warning} el cual permitiría la activación de las reglas de {\bf backtrack}.
@@ -172,6 +172,9 @@ AfterHazardsModule::retract_warning_when_kill
 Los modulo se gestionan desde el modulo {\bf myMAIN}, este va enfocando modulo a modulo en serie y en un orden prestablecido:
 \\{\bf HazardsModule} $\rightarrow$ {\bf AfterHazardsModule} $\rightarrow$ {\bf MovementModule}\\
 Este se repite siempre que exista {\bf repeat}, estos se concatenan asertando y eliminando instancias como {\bf passToAfterHazardsModule} o {\bf passToMovementModule} para asegurar el correcto orden de entrada de los distintos módulos.
+
+\section{Colaboradores}
+Ambos hemos trabajado conjuntamente sobre github, sin embargo, Jorge Zafra se especializo en el modulo de movimiento, y Diego Rodriguez en el de peligros.
 
 
 \end{document}
