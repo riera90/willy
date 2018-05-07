@@ -7,7 +7,7 @@ Prácticas de Sistemas Inteligentes (Grado en Ingeniería Informática, UCO).
  - Escribe en el terminal: java -Djava.library.path=. -jar WillyDemo.jar
  - Pulsa el botón "All maps" para resolver todos los mapas existentes en el directorio "maps"
 
-# Docuentación
+# Documentación
 
 ## Nuestra puntuación
 
