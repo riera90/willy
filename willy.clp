@@ -447,7 +447,7 @@
 	(assert (position (name willy) (x ?x) (y (- ?y 1)))) ; Actualizacion de la posicion de willy, en este caso una posicion hacia abajo
 	(assert (movimientos-contrarios $?valores)) ; Vuelvo a afirmar el hecho movimientos pero ahora sin el movimiento que acaba de realizar
 	(assert (repeat))
-	(return)
+	(return) ; Una vez realizado el movimiento lo saca de la pila el modulo movimientos
 )
 
 ; Para el resto de backtracks es exactamente lo mismo lo unico que se modifica es la posicion a la que se mueve
@@ -646,6 +646,8 @@
 	)
 	(assert (movimientos-contrarios $?valores)) ; Elimino la posicion hacia la que se acaba de mover, en este caso norte
 	;Y afirmo el hecho con el resto de movimientos que quedaron por realizar
+	(assert (repeat))
+	(return)
 )
 
 ;El resto de reglas son iguales pero retrocediendo hacia diferentes posiciones
@@ -666,6 +668,8 @@
 		(iteration (+ ?iteration 1))
 	)
 	(assert (movimientos-contrarios $?valores))
+	(assert (repeat))
+	(return)
 )
 
 
@@ -685,6 +689,8 @@
 		(iteration (+ ?iteration 1))
 	)
 	(assert (movimientos-contrarios $?valores))
+	(assert (repeat))
+	(return)
 )
 
 
@@ -704,4 +710,6 @@
 		(iteration (+ ?iteration 1))
 	)
 	(assert (movimientos-contrarios $?valores))
+	(assert (repeat))
+	(return)
 )
